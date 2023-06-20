@@ -1,0 +1,302 @@
+# Processing links aerorecipe
+
+```elixir
+Mix.install([
+  {:floki, "~> 0.34.3"},
+  {:httpoison, "~> 2.1"},
+  {:explorer, "~> 0.5.7"},
+  {:kino_explorer, "~> 0.1.4"},
+  {:vega_lite, "~> 0.1.7"},
+  {:kino_vega_lite, "~> 0.1.9"}
+])
+```
+
+## Reading from CSV and transform to list
+
+```elixir
+require Explorer.DataFrame, as: DF
+require Explorer.Series, as: Series
+File.cd!("/Users/liam.ng/Desktop")
+document = File.read!("links.html")
+
+links =
+  Floki.parse_fragment!(document)
+  |> Floki.find("a")
+  |> Floki.attribute("href")
+
+df = DF.new(links: links)
+```
+
+<!-- livebook:{"attrs":{"assign_to":"df","data_frame":"df","data_frame_alias":"Elixir.DF","is_data_frame":true,"missing_require":null,"operations":[{"active":true,"column":"links","data_options":{"links":"string"},"datalist":["/recipes/james-hoffmann-aeropress-recipe","/recipes/13g-that-makes-you-happy","/recipes/james-hoffmann","/recipes/love-me-some-acid","/recipes/tim-wendelboe","/recipes/smooothy","/recipes/aeropress-iced-latte","/recipes/the-only-aeropress-recipe-you-will-ever-need","/recipes/backpack-of-freedom","/recipes/v60-style-aeropress-light","/recipes/aeropress-espresso","/recipes/for-the-sweetest-cup","/recipes/low-effort-big-reward","/recipes/2015-wac-1st-place","/recipes/rule-of-thirds","/recipes/evp-iced-coffee","/recipes/2019-wac-1st-place","/recipes/single-cup-of-joy","/recipes/alan-adler-original","/recipes/long-aeropress-espresso-shot","/recipes/2017-wac-1st-place","/recipes/v60-style-aeropress-dark","/recipes/treble-clef","/recipes/all-about-the-intervals","/recipes/2021-world-aeropress-champion","/recipes/tylers-bypass","/recipes/tzans-hellenic-aeropress-recipe","/recipes/strudel-pop","/recipes/alan-adler-cold-brew-aeropress-recipe","/recipes/no-press-aeropress","/recipes/jonathan-gagne","/recipes/when-i-forget-other-recipes","/recipes/2014-wac-1st-place","/recipes/starbucks-americano-replacement","/recipes/citric-sweet","/recipes/home-press-by-benja","/recipes/tim-wendelboe-stronger","/recipes/10-grams-of-coffee","/recipes/the-iced-stubby","/recipes/aeropress-for-2","/recipes/2018-wac-3rd-place","/recipes/20-100-100","/recipes/double-press","/recipes/the-stubby","/recipes/the-boo","/recipes/the-gatsby","/recipes/v60-killer","/recipes/aeropress-flat-white","/recipes/on-the-road-with-stumptown","/recipes/prismo-full-immersion","/recipes/new-orleans-brewers-cup-champion","/recipes/two-sweet-latte","/recipes/2018-wac-1st-place","/recipes/cold-drip-coffee-with-puckpuck","/recipes/nick-hatch-2015-wac-2nd-place","/recipes/lemonjellos-cold-brew","/recipes/back-to-basics","/recipes/prismo-iced-latte","/recipes/thick-and-clean","/recipes/10g-for-a-little-cup-of-balanced-coffee","/recipes/aeropress-with-2-separate-extractions","/recipes/cheffes-7-minute-cold-brew","/recipes/fruity-press","/recipes/dump-some-milk-on-it","/recipes/safe-zone","/recipes/three-nos","/recipes/14g-iced-aeropress","/recipes/all-around-brew-recipe","/recipes/2019-wac-2nd-place","/recipes/raphaels-personal-recipe-a","/recipes/black-and-tan","/recipes/2016-wac-1st-place","/recipes/prismo-affauxgato","/recipes/aeropress-on-the-rocks","/recipes/teeny-tiny-mindblowing-aeroPress-recipe","/recipes/microdosing-for-one","/recipes/caravan-coffee","/recipes/kaldis-coffee-aeropress-recipe","/recipes/aeroress-with-fruit-filter","/recipes/coffeefusion-aeropress-recipe","/recipes/2017-2019-wac-winners-hybrid","/recipes/simple-inverted","/recipes/shake-weight","/recipes/extra-chocolatey-full-bodied-cup","/recipes/tetsu-kasuya-aeropress-recipe","/recipes/15g-that-made-me-happier","/recipes/vietnamese-iced-coffee","/recipes/long-but-lovely","/recipes/uncle-wolfies-cocospresso","/recipes/championship-cold-water-bypass","/recipes/sweet-town","/recipes/cardamon-coffee","/recipes/some-serious-gourmet-shit","/recipes/ralf-ruellers-personal-aeropress-recipe","/recipes/2022-world-aeropress-championship-1st-place","/recipes/high-dose-low-water","/recipes/the-corvus","/recipes/the-tinkerer","/recipes/aeropress-number-4","/recipes/huge-espresso-with-fellow-prismo","/recipes/crocodile-prophecy","/recipes/ice-brew-for-the-summer","/recipes/aeroespresso","/recipes/15g-of-fine-robusta","/recipes/coffee-with-april","/recipes/2021-world-aeropress-championship-2nd-place","/recipes/nothing-too-fancy","/recipes/tried-and-true","/recipes/balanced-starbucks-dark-roast","/recipes/quick-and-dirty","/recipes/2019-cataluna-ac-3rd-place","/recipes/orange-aeropress-coffee","/recipes/taking-you-to-flavourtown","/recipes/delightful-light-roasts","/recipes/counterintuitive-sweet-spot-12-minute","/recipes/sunday-coffee-with-your-partner-2-cups","/recipes/alan-alder-in-his-kitchen","/recipes/diy-cold-drip-using-the-aeropress","/recipes/rich-flavour-daily-cup","/recipes/2018-wac-2nd-place","/recipes/the-magpie","/recipes/a-hint-of-licorique","/recipes/great-cup-cheap-price","/recipes/candy-blow-flower-aeropress-recipe","/recipes/dayglow-aeropress-recipe","/recipes/long-steady-press","/recipes/blue-bottle-recipe","/recipes/mokapress","/recipes/2021-world-aeropress-championship-3rd-place","/recipes/2021-swedish-aeropress-champion","/recipes/hello-darkness-my-old-friend","/recipes/roastown-coffee-anti-bypass-recipe","/recipes/espresso-like-aeropress","/recipes/minimal-with-prismo","/recipes/aeropress-v60-combo","/recipes/hg-personal-aeropress","/recipes/brooklyn-roasting-company","/recipes/amazing-acidity-and-body","/recipes/market-lane-aeropress","/recipes/2017-wac-2nd-place","/recipes/irish-aeropress-champion-2019","/recipes/carlos-xl-recipe","/recipes/lucky-morning-cup","/recipes/big-ole-iced-latte","/recipes/fruity-coffees-by-jpanda","/recipes/shin-vietnamese-aeropress","/recipes/belas-farewell-coffee","/recipes/2022-dubai-aeropress-champion","/recipes/freddo-espresso","/recipes/double-aeropress-double-the-fun","/recipes/jacobys-pseudo-espresso","/recipes/tanner-morita","/recipes/lucky-13","/recipes/smooth-bomb","/recipes/worth-the-wait","/recipes/spanish-latte","/recipes/kimbo-klassic","/recipes/dr-jekyll-or-mr-hyde","/recipes/something-sweet","/recipes/james-hoffmann-iced-aeropress","/recipes/2022-uae-aeropress-champion","/recipes/2022-saudi-aeropress-champion","/recipes/2022-indian-aeropress-championship-winning-recipe","/recipes/strong-black","/recipes/aerostretto","/recipes/no-bells-and-whistles","/recipes/coffee-geek-cold-brew","/recipes/low-temp-stirring-recipe","/recipes/swiss-aeropress-champion-2016","/recipes/acidy-hybrid","/recipes/iced-black-coffee","/recipes/terraform-coffee-roasters","/recipes/fuller-flavour-profile-vietnamese-style","/recipes/iced-americano","/recipes/smooth-flavoursome-and-fast","/recipes/indian-aeropress-championship-bengaluru-region","/recipes/aerodoppio","/recipes/a-fruity-perspective","/recipes/brew-like-a-squirrel","/recipes/sweet-acidic-and-cold","/recipes/medium-dark-roast-recipe","/recipes/fast-cup","/recipes/aroma-and-sweetness","/recipes/the-botched","/recipes/fresh-orange-ice-coffee","/recipes/long-bloom-flip","/recipes/la-fruta-madre","/recipes/akuma-recipe-inspired-by-tetsu-kasuya-hario-switch","/recipes/easy-aeropress-for-2","/recipes/just-a-good-simple-cup","/recipes/dirty-thirty","/recipes/coffee-infused-raspberry-kicker","/recipes/closer-aeropress-espresso","/recipes/the-ultimate-iced-coffee-recipe","/recipes/kruves-sifted-aeropress-recipe","/recipes/brew-with-2-pour","/recipes/over-50s","/recipes/20g-is-always-a-good-decision","/recipes/this-cup-is-getting-ratiod","/recipes/happy-mistake","/recipes/8-minutes-to-delicious-coffee","/recipes/kenya-riaki","/recipes/juans-personal-recipe-for-tasting","/recipes/iced-aeropress-recipe-by-alexander-mills","/recipes/jagursan-kohii","/recipes/the-upside-down","/recipes/like-a-dragon","/recipes/blue-collar-coffee","/recipes/17g-light-roast","/recipes/quick-and-dirty-cuppa","/recipes/busy-day-big-flavor","/recipes/2022-dutch-aeropress-championship-1st-place","/recipes/short-shot-coffee","/recipes/semi-pour-over","/recipes/tap-brewed","/recipes/global-warming","/recipes/a-coffee-from-twin-peaks","/recipes/fruity-juicy-kenyan-coffee","/recipes/least-variables-and-most-consistent","/recipes/kboom-aeropress-recipe","/recipes/standard-and-simple","/recipes/indonesian-aeropress-championship-2017-3rd-place","/recipes/standard-aeropress","/recipes/2019-brazilian-aeropress-championship-2nd-place","/recipes/prismo-iced-coffee-lattee","/recipes/sumatra-aeropress-crema","/recipes/aeropress-by-nemesis-coffee","/recipes/mediodia","/recipes/dark-roast-americano","/recipes/french-press-pour-over-hybrid","/recipes/the-six-eleven-a-kalita-style-aeropress","/recipes/fast-brew-for-everyday","/recipes/zero-fuss-quick-latte","/recipes/daily-driver-triple-blend","/recipes/2-cup-iced-aeropress","/recipes/c4fen-aeropress","/recipes/iced-aeropress-light-roast","/recipes/out-of-beans","/recipes/what-sorcery-is this","/recipes/mocaeropreccino","/recipes/multiple-servings-from-aeropress","/recipes/a-better-iced-coffee","https://instagram.com/aeropress_recipe/","https://twitter.com/AeroPrecipe_","https://fb.me/aeroprecipe"],"filter":"contains","message":null,"operation_type":"filters","type":"string","value":"/recipes"}]},"chunks":null,"kind":"Elixir.KinoExplorer.DataTransformCell","livebook_object":"smart_cell"} -->
+
+```elixir
+df = df |> DF.filter(contains(links, "/recipes"))
+```
+
+```elixir
+# Explorer.Series.from_list(data)
+# df = Explorer.DataFrame.new(link: data)
+# df["link"]
+File.cd!("/Users/liam.ng/Documents/Livebook")
+
+links =
+  DF.from_csv!("links.csv")
+  # can use select as well. Pull will return series instead of DataFrame
+  |> DF.pull("links")
+  |> Series.to_list()
+```
+
+## Extract Data from single page
+
+```elixir
+# test_link = "https://aeroprecipe.com/recipes/james-hoffmann-aeropress-recipe"
+# response = HTTPoison.get!(test_link)
+# html = response.body
+```
+
+SingleRecipe represents a single side, it only cares about the happy path. Failure is not being handled
+
+```elixir
+defmodule SingleRecipe do
+  defstruct [
+    :title,
+    :description,
+    :category,
+    :recipe_details,
+    :coffee,
+    :water,
+    :steps,
+    :link,
+    :votes
+  ]
+
+  # Construction
+  def from(html, link \\ "") when is_bitstring(html) do
+    parsed = Floki.parse_document!(html)
+
+    %SingleRecipe{
+      title: title(parsed),
+      description: description(parsed),
+      category: category(parsed),
+      recipe_details: recipe_details(parsed),
+      coffee: coffee(parsed),
+      water: water(parsed),
+      steps: steps(parsed),
+      votes: votes(parsed),
+      link: link
+    }
+  end
+
+  # Extraction
+  defp title(html) do
+    html
+    |> Floki.find("h1")
+    |> hd()
+    |> Floki.text()
+  end
+
+  # -> String as HTML
+  defp description(html) do
+    html
+    |> Floki.find("#recipeDescription")
+    |> Floki.raw_html()
+  end
+
+  defp category(html) do
+    case html |> Floki.find(".border-gray-500") do
+      # Handle the case when the result is an empty list
+      [] ->
+        ""
+
+      # Handle the case when at least one element is found
+      [element | _rest] ->
+        element
+        |> Floki.text()
+        |> String.trim_leading()
+    end
+  end
+
+  defp recipe_overview(html, number) do
+    html
+    |> Floki.find(".bg-opacity-75 .mt-5")
+    |> Enum.at(number)
+    |> Floki.text(sep: ", ")
+  end
+
+  defp recipe_details(html) do
+    html
+    |> recipe_overview(1)
+  end
+
+  defp coffee(html) do
+    html
+    |> recipe_overview(2)
+    |> String.replace("Coffee:, ", "")
+  end
+
+  defp water(html) do
+    html
+    |> recipe_overview(3)
+    |> String.replace("Water:, ", "")
+  end
+
+  defp steps(html) do
+    html
+    |> Floki.find(".recipeSteps")
+    |> Floki.text(sep: "\n")
+  end
+
+  defp votes(html) do
+    result =
+      html
+      |> Floki.find(".border-pink-600")
+      |> Floki.attribute("data-numvotes")
+      |> Floki.text()
+
+    result
+  end
+end
+```
+
+```elixir
+defmodule Scraper do
+  @chunk_size 30
+  @timeout 1800_000
+  @sleep_time 500
+
+  # Starting point: Initiates the scraping process
+  def scrape_links(links) do
+    scrape_links(links, [], 0)
+  end
+
+  # Base case: No more links to process
+  defp scrape_links([], accumulator, count) do
+    IO.puts("All links processed. Total links processed: #{count}.")
+    accumulator
+  end
+
+  # Recursive case: Processes a chunk of links
+  defp scrape_links(links, accumulator, count) do
+    {sliced_links, remaining_links} = Enum.split(links, @chunk_size)
+    results = measure_time(fn -> scrape_chunk(sliced_links) end)
+    new_count = count + length(results)
+
+    :timer.sleep(@sleep_time)
+
+    scrape_links(remaining_links, accumulator ++ results, new_count)
+  end
+
+  # Scrapes a chunk of links in parallel
+  defp scrape_chunk(links) do
+    tasks =
+      Enum.map(links, fn link ->
+        Task.async(fn -> fetch_recipe(link) end)
+      end)
+
+    Task.await_many(tasks, :infinity)
+  end
+
+  # Fetches a recipe from a given link
+  defp fetch_recipe(link) do
+    case HTTPoison.get(link, timeout: @timeout) do
+      {:ok, response} ->
+        html = response.body
+        SingleRecipe.from(html, link)
+
+      {:error, _reason} ->
+        # Retry the request recursively in case of an error
+        IO.puts("Error happened with #{link}")
+        fetch_recipe(link)
+    end
+  end
+
+  # Measures the time taken by a given function
+  defp measure_time(fun) do
+    start_time = :os.system_time(:millisecond)
+    result = fun.()
+    end_time = :os.system_time(:millisecond)
+    elapsed_time = end_time - start_time
+    elapsed_time_sec = elapsed_time / 1000.0
+    IO.puts("Processed #{@chunk_size} #{elapsed_time_sec} seconds.")
+    result
+  end
+end
+```
+
+## Scraper
+
+```elixir
+results = Scraper.scrape_links(links)
+```
+
+## Create Dataframe and export as CSV
+
+```elixir
+map_result = Enum.map(results, &Map.from_struct(&1))
+
+# converted_recipe = put_in(recipe_map.votes, String.to_integer(recipe_map.votes))
+final_df =
+  DF.new(map_result)
+  |> DF.select([
+    "title",
+    "description",
+    "category",
+    "recipe_details",
+    "coffee",
+    "water",
+    "steps",
+    "votes",
+    "link"
+  ])
+  |> Explorer.DataFrame.mutate(votes: cast(votes, :integer))
+```
+
+```elixir
+File.cd!("/Users/liam.ng/Documents/Livebook")
+df = DF.from_csv!("aerorecipes.csv")
+```
+
+```elixir
+create_map_from_list = fn list ->
+  %{
+    method: Enum.at(list, 0),
+    time: Enum.at(list, 1),
+    filter_type: Enum.at(list, 2)
+  }
+end
+
+# Split list into single elements and create map
+extracted_recipe_details_df =
+  df
+  |> DF.pull("recipe_details")
+  |> Series.to_list()
+  |> Enum.map(fn element ->
+    String.split(element, ", ")
+  end)
+  |> Enum.map(fn element ->
+    create_map_from_list.(element)
+  end)
+  |> DF.new()
+
+df = DF.concat_columns([df, extracted_recipe_details_df])
+
+df =
+  DF.put(
+    df,
+    :coffe_amount_in_g,
+    Series.transform(df[:coffee], fn raw_coffee ->
+      raw_coffee
+      |> String.split(", ")
+      |> List.first()
+      |> String.replace("g", "")
+    end)
+  )
+  |> DF.mutate(coffe_amount_in_g: cast(coffe_amount_in_g, :float))
+  |> DF.drop_nil()
+
+# |> > DF.select(["title", "description", "category", "recipe_details", "coffee", "water", "steps", "votes", "link"])
+
+# coffee = "15g, Medium - Coarse, Kirinyaga, Kenya (as used in the 2018 WAC Finals)"
+# |> String.split(", ")
+# |> List.first()
+```
